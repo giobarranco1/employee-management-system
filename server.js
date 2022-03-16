@@ -147,5 +147,64 @@ function addRole() {
     });
 };
 
-function addEmployee();
+function addEmployee() {
+    db.query("SELECT * FROM role", function (err, results){
+        if (err) throw err;
+        const employeeRoles = results.map((roles) => ({
+            name: `${roles.title}`,
+            value: roles.id,
+        }));
+        db.query("SELECT * FROM employee", function (err, results) {
+            const managerName = results.map((manager) => ({
+                name: `${manager.first_name} ${manager.last_name}`,
+                value: manager.manager_id,
+            }));
+
+            inquirer
+            .prompt([
+                {
+                    type: "input",
+                    name: "firstName",
+                    message: "Whats the employees first name?",
+                },
+                {
+                    type: "input",
+                    name: "lastName",
+                    message: "Whats the employees last name?",
+                },
+                {
+                    type: "list",
+                    name: "role",
+                    message: "Whats the employees role?",
+                    choices: employeeRoles,
+                },
+                {
+                    type: "list",
+                    name: "manager",
+                    message: "Who is the employees manager?",
+                    choices: managerName,
+                },
+            ])
+            .then((response) => {
+                const sql = `INSERT INTO employee SET ?`;
+                const obj = {
+                    first_name: response.firstName,
+                    last_name: response.lastName,
+                    role_id: response.role,
+                    manager_id: response.manager,
+                };
+                db.query(sql, obj, function (err, result) {
+                    if (err) throw err;
+                    console.log(
+                        `${response.firstName} ${response.lastName} has been added to database`
+                    );
+                });
+                mainMenu();
+            });
+        });
+    });
+};
+
+
+
 function updateEmployeeRole();
