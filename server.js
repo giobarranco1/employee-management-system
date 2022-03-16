@@ -207,4 +207,47 @@ function addEmployee() {
 
 
 
-function updateEmployeeRole();
+function updateEmployeeRole() {
+    db.query("SELECT * FROM employee", function(err, results){
+        if (err) throw err;
+        const employeeNames = results.map((employee) => ({
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id,
+        }));
+        db.query("SELECT * FROM role", function(err, results) {
+            if (err) throw err;
+            const employeeRoles = results.map((roles) => ({
+                name: `${roles.title}`,
+                value: roles.id,
+            }));
+            inquirer
+            .prompt([
+                {
+                    type: "list",
+                    message: "Who do you need to update?",
+                    choices: employeeNames,
+                    name: "employeeName",
+                },
+                {
+                    type: "list",
+                    message: "Which role do you want to assign to the employee?",
+                    choices: employeeRoles,
+                    name: "newRole",
+                },
+            ])
+            .then((response) => {
+                db.connect(function (err) {
+                    if (err) throw err;
+                    const sql = `UPDATE employee SET ? WHERE id = ${response.employeeName}`;
+                    const obj = {
+                        role_id: response.newRole,
+                    };
+                    db.query(sql, obj, function(err, result){
+                        if (err) throw err;
+                        mainMenu();
+                    });
+                });
+            });
+        });
+});
+}
