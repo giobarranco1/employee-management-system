@@ -63,10 +63,28 @@ function viewEmployees() {
     )
 };
 
+function viewDepartments(){
+    db.query(
+        "SELECT * FROM department",
+        function(err, results) {
+            console.table(results);
+            start();
+        }
+    );
+};
+
+function viewRoles(){
+    db.query(
+        "SELECT role.id, role.title, role.salary, department.name AS department FROM role JOIN department ON role.department_id = department.id;",
+        function(err, results) {
+            console.table(results);
+            start();
+        }
+    )
+};
 
 
-function viewDepartments();
-function viewRoles();
+
 function addDept();
 function addRole();
 function addEmployee();
