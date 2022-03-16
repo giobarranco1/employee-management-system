@@ -83,9 +83,28 @@ function viewRoles(){
     )
 };
 
+function addDept() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What's the name of the new department?",
+            name: "departmentName",
+        },
+    ])
+    .then((response) => {
+        db.connect(function (err) {
+            if (err) throw err;
+            const sql = "INSERT INTO department SET ?";
+            const obj = {name: response.departmentName};
+            db.query(sql, obj, function (err, results){
+                if (err) throw err;
+                console.log("A new department has been added.");
+            });
+        });
+        start();
+    });
+};
 
-
-function addDept();
 function addRole();
 function addEmployee();
 function updateEmployeeRole();
